@@ -289,6 +289,54 @@ bool numbers_match(node* z) {
 	return nums_match;
 }
 
+bool is_fib_heap_children(node* z) {
+	bool is_fibheap = true;
+
+	node* xt = z->child;
+	if(xt != NULL) {
+		while(xt->right != z->child) {
+			if(xt->p->key > xt->key) {
+				return is_fibheap = false;
+			}
+			if(xt->child != NULL) {
+				is_fibheap = is_fib_heap_children(xt);
+				if(!is_fibheap) { return false; }
+			}
+			xt = xt->right;
+		}
+		if(xt->right == z->child) {
+			if(xt->p->key > xt->key) {
+				return is_fibheap = false;
+			}
+			if(xt->child != NULL) {
+				is_fibheap = is_fib_heap_children(xt);
+				if(!is_fibheap) { return false; }
+			}
+		}
+	}
+
+	return is_fibheap;
+}
+
+bool is_fib_heap(node* z) {
+	bool is_fibheap = true;
+
+	node* xt = z;
+	if(xt != NULL) {
+		while(xt->right != z) {
+			is_fibheap = is_fib_heap_children(xt);
+			if(!is_fibheap) { return false; }
+			xt = xt->right;
+		}
+		if(xt->right == z) {
+			is_fibheap = is_fib_heap_children(xt);
+			if(!is_fibheap) { return false; }
+		}
+	}
+
+	return is_fibheap;
+}
+
 node* fib_heap_extract_min(FibHeap* H) {
 
 	node* z = H->min;
@@ -326,6 +374,58 @@ node* fib_heap_extract_min(FibHeap* H) {
 
 }
 
+void cut(FibHeap* H, node* x, node* y) {
+	//Remove x from child list of y and add x to root list of H
+	x->left->right = x->right;
+	x->right->left = x->left;
+
+	x->right = H->min->right;
+	x->left = H->min;
+
+	H->min->right->left = x;
+	H->min->right = x;
+
+	//If x is only child set child of parent to null
+	if(x == x->right) {
+		y->child = NULL;
+	}
+
+	y->degree = y->degree - 1;
+
+	x->p = NULL;
+	x->mark = false;
+}
+
+void cascading_cut(FibHeap* H, node* y) {
+	node* z = y->p;
+	if(z != NULL) {
+		if(y->mark == false) {
+			y->mark = true;
+		}
+		else {
+			cut(H, y, z);
+			cascading_cut(H, z);
+		}
+	}
+}
+
+void fib_heap_decrease_key(FibHeap* H, node* x, int k) {
+	if(k > x->key) {
+		const char* s = "new key is greater than current key";
+		std::cout << s << std::endl;
+		throw s;
+	}
+	x->key = k;
+	node* y = x->p;
+	if(y != NULL && x->key < y->key) {
+		cut(H, x, y);
+		cascading_cut(H, y);
+	}
+	if(x->key < H->min->key) {
+		H->min = x;
+	}
+}
+
 int main(int argc, char* argv[]) {
 
 	//Declarations
@@ -334,7 +434,7 @@ int main(int argc, char* argv[]) {
 	int num_calls = 357;
 
 	//Create nodes
-//	srand (time(NULL));
+	srand (time(NULL));
 	node** v = new node*[num_nodes];
 	for(int i = 0; i < num_nodes; ++i) {
 		v[i] = new node;
@@ -353,7 +453,9 @@ int main(int argc, char* argv[]) {
 		z[i] = fib_heap_extract_min(&H);
 	}
 
-	//Print stuff
+	bool is_fibheap = is_fib_heap(H.min);
+
+	//Print nodes
 	for(int i = 0; i < num_calls; ++i) {
 		if(z[i] != NULL) {
 		    std::cout << "z " << i << " key: " << z[i]->key << " , degree: " << z[i]->degree << std::endl;
@@ -362,6 +464,8 @@ int main(int argc, char* argv[]) {
 			std::cout << "z key " << i << " is null" << std::endl;
 		}
 	}
+
+	std::cout << "is fib heap: " << is_fibheap << std::endl;
 
 	return 0;
 }
