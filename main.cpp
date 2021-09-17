@@ -17,9 +17,13 @@ typedef struct Node {
 	Node* right;
 	Node* p;
 	Node* child;
+	Node* pi;
 
 	int key;
+	int d;
 	int degree;
+	int index;
+	int index_og;
 	bool mark;
 } node;
 
@@ -166,15 +170,9 @@ void consolidate(FibHeap* H) {
 
 }
 
-int num_times_exec = 0;
-int tot_num_nodes = 0;
-
-void print_child_circle(node* child);
-void print_circle(node* z);
-
 void print_child_circle(node* child) {
 	node* xt = child;
-	if(xt != NULL && num_times_exec > 80) {
+	if(xt != NULL) {
 		if(xt->right != child) {
 			while(xt->right != child) {
 				std::cout << "xt->child->key: " << xt->key;
@@ -206,7 +204,7 @@ void print_child_circle(node* child) {
 
 void print_circle(node* z) {
 	node* xt = z;
-	if(xt != NULL && num_times_exec > 80) {
+	if(xt != NULL) {
 		if(xt->right != z) {
 			while(xt->right != z) {
 				std::cout << "xt->key: " << xt->key;
@@ -245,7 +243,6 @@ bool numbers_children_match(node* z) {
 	if(xt != NULL) {
 		while(xt->right != z->child) {
 			num_of_nodes++;
-			tot_num_nodes++;
 			if(xt->child != NULL) {
 				nums_match = numbers_children_match(xt);
 				if(!nums_match) { return false; }
@@ -254,7 +251,6 @@ bool numbers_children_match(node* z) {
 		}
 		if(xt->right == z->child) {
 			num_of_nodes++;
-			tot_num_nodes++;
 			if(xt->child != NULL) {
 				nums_match = numbers_children_match(xt);
 				if(!nums_match) { return false; }
@@ -274,13 +270,11 @@ bool numbers_match(node* z) {
 	node* xt = z;
 	if(xt != NULL) {
 		while(xt->right != z) {
-			tot_num_nodes++;
 			nums_match = numbers_children_match(xt);
 			if(!nums_match) { return false; }
 			xt = xt->right;
 		}
 		if(xt->right == z) {
-			tot_num_nodes++;
 			nums_match = numbers_children_match(xt);
 			if(!nums_match) { return false; }
 		}
@@ -453,9 +447,10 @@ int main(int argc, char* argv[]) {
 		z[i] = fib_heap_extract_min(&H);
 	}
 
+	//Check if heap is fib heap
 	bool is_fibheap = is_fib_heap(H.min);
 
-	//Print nodes
+	//Print stuff
 	for(int i = 0; i < num_calls; ++i) {
 		if(z[i] != NULL) {
 		    std::cout << "z " << i << " key: " << z[i]->key << " , degree: " << z[i]->degree << std::endl;
