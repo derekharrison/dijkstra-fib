@@ -138,8 +138,6 @@ void fib_heap_link(FibHeap* H, node* y, node* x) {
     make_child_of(H, y, x);
 }
 
-bool numbers_match(node* z);
-
 void consolidate(FibHeap* H) {
 
     counter++;
