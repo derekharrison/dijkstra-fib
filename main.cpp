@@ -14,8 +14,6 @@
 #include <vector>
 
 const int SETVAR = 314159;
-int counter = 0;
-int node_counter = 0;
 
 typedef struct Node {
     Node* left;
@@ -30,14 +28,12 @@ typedef struct Node {
     int d;
     int degree;
     int index;
-    int index_og;
     bool mark;
 } node;
 
 class FibHeap {
 public:
     int n;
-    int n_root;
     node* min = NULL;
 };
 
@@ -136,11 +132,11 @@ void fib_heap_link(FibHeap* H, node* y, node* x) {
 
     //Make y child of x
     make_child_of(H, y, x);
+
 }
 
 void consolidate(FibHeap* H) {
 
-    counter++;
     double golden = (1.0 + sqrt(5.0)) / 2.0;
     double f = log(H->n) / log(golden);
     int D = floor(f + 0.01) + 1;
@@ -193,7 +189,6 @@ void consolidate(FibHeap* H) {
                         node* y = A[d];
                         if(y->key > x->key) {
                             //Make y child of x;
-
                              make_child_of(H, y, x);
 
                              A[d] = NULL;
@@ -229,9 +224,7 @@ void consolidate(FibHeap* H) {
                         there_is_dup = true;
                         node* y = A[d];
                         if(y->key > x->key) {
-
                             //Make y child of x;
-
                             make_child_of(H, y, x);
 
                             A[d] = NULL;
@@ -243,7 +236,6 @@ void consolidate(FibHeap* H) {
                         }
                         else {
                             //Make x child of y;
-
                             make_child_of(H, x, y);
 
                             A[d] = NULL;
@@ -362,7 +354,6 @@ bool numbers_children_match(node* z) {
     if(xt != NULL) {
         while(xt->right != z->child) {
             num_of_nodes++;
-            node_counter++;
             if(xt->child != NULL) {
                 nums_match = numbers_children_match(xt);
                 if(!nums_match) { return false; }
@@ -371,7 +362,6 @@ bool numbers_children_match(node* z) {
         }
         if(xt->right == z->child) {
             num_of_nodes++;
-            node_counter++;
             if(xt->child != NULL) {
                 nums_match = numbers_children_match(xt);
                 if(!nums_match) { return false; }
@@ -391,13 +381,11 @@ bool numbers_match(node* z) {
     node* xt = z;
     if(xt != NULL) {
         while(xt->right != z) {
-            node_counter++;
             nums_match = numbers_children_match(xt);
             if(!nums_match) { return false; }
             xt = xt->right;
         }
         if(xt->right == z) {
-            node_counter++;
             nums_match = numbers_children_match(xt);
             if(!nums_match) { return false; }
         }
@@ -646,22 +634,20 @@ void dijkstra2(FibHeap* H, int** w, node** v_ref) {
     }
 }
 
-void set_index_map(int size_graph, int* index_map, int* index_map_inverse, int s) {
+void set_index_map(int size_graph, int* index_map, int s) {
 
     int index_track = 0;
     for(int i = s; i < size_graph; ++i) {
         index_map[i] = index_track;
-        index_map_inverse[index_track] = i;
         index_track++;
     }
     for(int i = 0; i < s; ++i) {
         index_map[i] = index_track;
-        index_map_inverse[index_track] = i;
         index_track++;
     }
 }
 
-void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat, int size_graph, std::vector<std::vector<int>>& edges, int s) {
+void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat, int size_graph, std::vector<std::vector<int>>& edges) {
 
     int** elem_is_set = int2D(size_graph);
 
@@ -688,10 +674,9 @@ std::vector<int> shortest_reach(int n, std::vector<std::vector<int>>& edges, int
     const int inf = 3e+8;
 
     //Set index map
+    s = s - 1; //Substract 1 from start index
     int* index_map = new int[n];
-    int* index_map_inverse = new int[n];
-    s = s - 1;
-    set_index_map(n, index_map, index_map_inverse, s);
+    set_index_map(n, index_map, s);
 
     //Initialize heap
     int num_nodes = n;
@@ -702,7 +687,6 @@ std::vector<int> shortest_reach(int n, std::vector<std::vector<int>>& edges, int
         v_ref[i]->pi = NULL;
         v_ref[i]->d = inf;
         v_ref[i]->index = i;
-        v_ref[i]->index_og = index_map_inverse[i];
         if(i == 0) {
             v_ref[0]->key = 0;
             v_ref[0]->d = 0;
@@ -726,7 +710,7 @@ std::vector<int> shortest_reach(int n, std::vector<std::vector<int>>& edges, int
     int** adj_mat = int2D(n);
     int** weight_mat = int2D(n);
 
-    populate_adj_and_weight_hr(index_map, adj_mat, weight_mat, n, edges, s);
+    populate_adj_and_weight_hr(index_map, adj_mat, weight_mat, n, edges);
 
     //Perform Dijkstra's algorithm
     dijkstra2(&H, weight_mat, v_ref);
@@ -772,6 +756,7 @@ int main(int argc, char* argv[]) {
     for(int i = 0; i < size_results; ++i) {
         std::cout << results[i] << " ";
     }
+    std::cout << std::endl;
     std::cout << "done" << std::endl;
 
     return 0;
