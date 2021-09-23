@@ -681,7 +681,7 @@ void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat,
     }
 }
 
-std::vector<int> shortest_reach(int n, std::vector<std::vector<int>> edges, int s) {
+std::vector<int> shortest_reach(int n, std::vector<std::vector<int>>& edges, int s) {
 
     //Declarations
     FibHeap H;
