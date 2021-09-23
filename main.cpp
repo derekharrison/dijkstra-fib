@@ -14,22 +14,7 @@
 #include <vector>
 
 const int SETVAR = 314159;
-
-/*
- * main.cpp
- *
- *  Created on: Sep 17, 2021
- *      Author: d-w-h
- */
-
-#include <iostream>
-#include <stdio.h>
-#include <math.h>
-#include <cstdlib>
-#include <stdlib.h>
-#include <time.h>
-#include <vector>
-
+int counter = 0;
 int node_counter = 0;
 
 typedef struct Node {
@@ -55,6 +40,24 @@ public:
 	int n_root;
 	node* min = NULL;
 };
+
+bool** bool2D(const int size) {
+    bool** p = new bool*[size];
+
+    for(int i = 0; i < size; ++i)
+        p[i] = new bool[size];
+
+    return p;
+}
+
+int** int2D(const int size) {
+    int** p = new int*[size];
+
+    for(int i = 0; i < size; ++i)
+        p[i] = new int[size];
+
+    return p;
+}
 
 void fib_heap_insert(FibHeap* H, node* x) {
 	x->degree = 0;
@@ -137,8 +140,6 @@ void fib_heap_link(FibHeap* H, node* y, node* x) {
 
 bool numbers_match(node* z);
 
-int counter = 0;
-
 void consolidate(FibHeap* H) {
 
 	counter++;
@@ -150,16 +151,6 @@ void consolidate(FibHeap* H) {
 	for(int i = 0; i < D + 2; ++i) {
 		A[i] = NULL;
 	}
-
-	std::cout << "PRINTING ROOT CIRCLE BEFORE: " << counter << std::endl;
-	print_root_circle(H->min);
-
-	//Test code
-	node_counter = 0;
-	int nums_match = numbers_match(H->min);
-	std::cout << "numbers match bro before: " << nums_match << std::endl;
-	std::cout << "H->n == node_counter before: " << (node_counter == (H->n - 1)) << std::endl;
-	//End test code
 
 	node* x = H->min;
 	bool there_is_dup = true;
@@ -279,80 +270,6 @@ void consolidate(FibHeap* H) {
 		}
 	}
 
-	//Test code
-	std::cout << "PRINTING ROOT CIRCLE" << std::endl;
-	print_root_circle(H->min);
-
-	node_counter = 0;
-	nums_match = numbers_match(H->min);
-	std::cout << "numbers match bro after: " << nums_match << std::endl;
-	std::cout << "H->n == node_counter after: " << (node_counter == (H->n - 1)) << std::endl;
-	//End test code
-
-//	//Test code below, remove when done testing
-//	for(int i = 0; i < D + 2; ++i) {
-//		A[i] = NULL;
-//	}
-//
-//	x = H->min;
-//	if(x != NULL) {
-//		if(x->right != H->min) {
-//			while(x->right != H->min) {
-//				int d = x->degree;
-//				std::cout << "x->degree: " << d << std::endl;
-//				x->p = NULL;
-//				if(A[d] != NULL) {
-//					std::cout << "THERE IS DUPLICATE" << std::endl;
-//					std::cout << "duplicate = " << d << std::endl;
-//
-//					exit(314159);
-//				}
-//				A[d] = x;
-//				x = x->right;
-//			}
-//
-//			if(x->right == H->min) {
-//				int d = x->degree;
-//				std::cout << "x->degree: " << d << std::endl;
-//				if(A[d] != NULL) {
-//					std::cout << "THERE IS DUPLICATE" << std::endl;
-//					std::cout << "duplicate = " << d << std::endl;
-//
-//					exit(314159);
-//				}
-//				x->p = NULL;
-//				A[d] = x;
-//			}
-//		}
-//		else {
-//			int d = x->degree;
-//			A[d] = x = x;
-//		}
-//	}
-//	//End test code
-
-	//Test code
-	std::cout << "START HERE" << std::endl;
-	for(int i = 0; i < D + 2; ++i) {
-		if(A[i] != NULL) {
-		    std::cout << "A[" << i << "].degree: " << A[i]->degree << std::endl;
-		}
-		else {
-			std::cout << "A[" << i << "] is null" << std::endl;
-		}
-	}
-
-	std::cout << "H->n == node_counter 1: " << (node_counter == (H->n - 1)) << std::endl;
-	if((node_counter != (H->n - 1))) { exit(314); }
-	std::cout << "node_counter 1: " << (node_counter) << std::endl;
-	std::cout << "H->n - 1, 1: " << (H->n - 1) << std::endl;
-//	std::cout << "numbers match 1: " << nums_match << std::endl;
-	std::cout << "H->min->right 1: " << (H->min->right) << std::endl;
-	std::cout << "H->min->right->right 1: " << (H->min->right->right) << std::endl;
-	std::cout << "H->min 1: " << (H->min) << std::endl;
-	std::cout << "H->min->left 1: " << (H->min->left) << std::endl;
-	//End test code
-
 	H->min = NULL;
 	for(int i = 0; i < D + 2; ++i) {
 		if(A[i] != NULL) {
@@ -374,20 +291,6 @@ void consolidate(FibHeap* H) {
 			}
 		}
 	}
-
-
-	//Test code
-	node_counter = 0;
-	nums_match = numbers_match(H->min);
-	std::cout << "H->n == node_counter 2: " << (node_counter == (H->n - 1)) << std::endl;
-	std::cout << "node_counter 2: " << (node_counter) << std::endl;
-	std::cout << "H->n - 1, 2: " << (H->n - 1) << std::endl;
-	std::cout << "numbers match 2: " << nums_match << std::endl;
-	std::cout << "H->min->right 2: " << (H->min->right) << std::endl;
-	std::cout << "H->min->right->right 2: " << (H->min->right->right) << std::endl;
-	std::cout << "H->min 2: " << (H->min) << std::endl;
-	std::cout << "H->min->left 2: " << (H->min->left) << std::endl;
-	//End test code
 }
 
 void print_child_circle(node* child) {
@@ -570,9 +473,6 @@ node* fib_heap_extract_min(FibHeap* H) {
 
 			z->child = NULL;
 		}
-		else {
-			std::cout << "y == null" << std::endl;
-		}
 
 		//Set all root parents to zero. Remove code when done testing
 		node* x_track = H->min;
@@ -591,7 +491,6 @@ node* fib_heap_extract_min(FibHeap* H) {
 
 		if(z == z->right) {
 			H->min = NULL;
-			std::cout << "z == z->right" << std::endl;
 		}
 		else {
 
@@ -601,29 +500,10 @@ node* fib_heap_extract_min(FibHeap* H) {
 
 		H->n = H->n - 1;
 
-
 	}
 
 	return z;
 
-}
-
-bool** bool2D(const int size) {
-    bool** p = new bool*[size];
-
-    for(int i = 0; i < size; ++i)
-        p[i] = new bool[size];
-
-    return p;
-}
-
-int** int2D(const int size) {
-    int** p = new int*[size];
-
-    for(int i = 0; i < size; ++i)
-        p[i] = new int[size];
-
-    return p;
 }
 
 void cut(FibHeap* H, node* x, node* y) {
@@ -753,31 +633,44 @@ void dijkstra(FibHeap* H) {
     }
 }
 
-void set_index_map(int size_graph, int* index_map, int* index_map_inverse, int s) {
-	//Make 0 elements point to zero
-	index_map[0] = index_map_inverse[0] = 0;
+void dijkstra2(FibHeap* H, int** w, node** v_ref) {
 
-	int index_track = 1;
-    for(int i = s; i <= size_graph; ++i) {
+	//Perform Dijkstra's algorithm
+    while(H->n > 0) {
+    	node* u = fib_heap_extract_min(H);
+
+		int num_adj_nodes = u->adj_nodes.size();
+		for(int i = 0; i < num_adj_nodes; ++i) {
+			int index_ref = u->adj_nodes[i];
+			node* v = v_ref[index_ref];
+			relax(u, v, w, H);
+		}
+    }
+}
+
+void set_index_map(int size_graph, int* index_map, int* index_map_inverse, int s) {
+
+	int index_track = 0;
+    for(int i = s; i < size_graph; ++i) {
         index_map[i] = index_track;
         index_map_inverse[index_track] = i;
         index_track++;
     }
-    for(int i = 1; i <= s - 1; ++i) {
+    for(int i = 0; i < s; ++i) {
         index_map[i] = index_track;
         index_map_inverse[index_track] = i;
         index_track++;
     }
 }
 
-void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat, int size_graph, std::vector<std::vector<int>> edges, int s) {
+void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat, int size_graph, std::vector<std::vector<int>>& edges, int s) {
 
-    int** elem_is_set = int2D(size_graph + 1);
+    int** elem_is_set = int2D(size_graph);
 
     int num_edges = edges.size();
     for(int i = 0; i < num_edges; ++i) {
-        int start = index_map[edges[i][0]];
-        int end = index_map[edges[i][1]];
+        int start = index_map[edges[i][0] - 1];
+        int end = index_map[edges[i][1] - 1];
         int weight = edges[i][2];
         if(elem_is_set[start][end] != SETVAR) {
             weight_mat[start][end] = weight_mat[end][start] = weight;
@@ -791,20 +684,16 @@ void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat,
 }
 
 std::vector<int> shortest_reach(int n, std::vector<std::vector<int>> edges, int s) {
+
 	//Declarations
 	FibHeap H;
-	std::vector<node> rs_S;
     const int inf = 3e+8;
 
     //Set index map
-    int* index_map = new int[n+1];
-    int* index_map_inverse = new int[n+1];
+    int* index_map = new int[n];
+    int* index_map_inverse = new int[n];
+    s = s - 1;
     set_index_map(n, index_map, index_map_inverse, s);
-
-    int* index_map_end = new int[n+1];
-    for(int i = 0; i < n; ++i) {
-        index_map_end[i] = 0;
-    }
 
     //Initialize heap
     int num_nodes = n;
@@ -814,8 +703,8 @@ std::vector<int> shortest_reach(int n, std::vector<std::vector<int>> edges, int 
         v_ref[i]->key = inf;
         v_ref[i]->pi = NULL;
         v_ref[i]->d = inf;
-        v_ref[i]->index = i + 1;
-        v_ref[i]->index_og = index_map_inverse[i+1];
+        v_ref[i]->index = i;
+        v_ref[i]->index_og = index_map_inverse[i];
 		if(i == 0) {
 			v_ref[0]->key = 0;
 			v_ref[0]->d = 0;
@@ -826,44 +715,37 @@ std::vector<int> shortest_reach(int n, std::vector<std::vector<int>> edges, int 
     //Add references to adjacent nodes
     int num_edges = edges.size();
     for(int i = 0; i < num_edges; ++i) {
-        int start_index = edges[i][0];
-        int end_index = edges[i][1];
+        int start_index = edges[i][0] - 1;
+        int end_index = edges[i][1] - 1;
 
         int start_index_reordered = index_map[start_index];
         int end_index_reordered = index_map[end_index];
-        v_ref[start_index_reordered-1]->adj_nodes.push_back(end_index_reordered);
-        v_ref[end_index_reordered-1]->adj_nodes.push_back(start_index_reordered);
+        v_ref[start_index_reordered]->adj_nodes.push_back(end_index_reordered);
+        v_ref[end_index_reordered]->adj_nodes.push_back(start_index_reordered);
     }
 
     //Initialize weight and adjacency matrices
-    int** adj_mat = int2D(n+1);
-    int** weight_mat = int2D(n+1);
+    int** adj_mat = int2D(n);
+    int** weight_mat = int2D(n);
 
     populate_adj_and_weight_hr(index_map, adj_mat, weight_mat, n, edges, s);
 
     //Perform Dijkstra's algorithm
-    while(H.n > 0) {
-    	node* u = fib_heap_extract_min(&H);
-
-    	bool is_fibheap = is_fib_heap(H.min);
-    	bool nums_match = numbers_match(H.min);
-
-
-
-        int num_adj_nodes = u->adj_nodes.size();
-        for(int i = 0; i < num_adj_nodes; ++i) {
-        	int index_ref = u->adj_nodes[i];
-        	node* v = v_ref[index_ref-1];
-        	relax(u, v, weight_mat, &H);
-        	std::cout << "stuck somewhere else" << std::endl;
-        }
-
-    	std::cout << "is fibheap: " << is_fibheap << std::endl;
-    	std::cout << "numbers match: " << nums_match << std::endl;
-    }
+	dijkstra2(&H, weight_mat, v_ref);
 
     //Reorder results
     std::vector<int> rs_S_reordered;
+    for(int i = 0; i < n; ++i) {
+    	if(i != s) {
+			int index = index_map[i];
+			if(v_ref[index]->key == inf) {
+				rs_S_reordered.push_back(-1);
+			}
+			else {
+				rs_S_reordered.push_back(v_ref[index]->key);
+			}
+    	}
+    }
 
     return rs_S_reordered;
 }
@@ -871,56 +753,28 @@ std::vector<int> shortest_reach(int n, std::vector<std::vector<int>> edges, int 
 int main(int argc, char* argv[]) {
 
 	//Declarations
-	FibHeap H;
-	H.n = 411;
-//	int num_nodes = H.n;
-//	int num_calls = num_nodes - 1;
+    int s = 2; //Start vertex must be greater or equal to 1
+    int n = 2499; //Number of vertices
 
-	//Execute algorithm
-	dijkstra(&H);
+    //Create edges
+    int num_edges = 3125;
+    std::vector<std::vector<int>> edges;
+    for(int i = 0; i < num_edges; ++i) {
+        int start_vert = rand() % n + 1;
+        int end_vert = rand() % n + 1;
+        int weight = rand() % 200 + 1;
+        edges.push_back({start_vert, end_vert, weight});
+    }
 
+    //Compute distances to nodes from start vertex
+    std::vector<int> results = shortest_reach(n, edges, s);
+
+	//Print stuff
+    int size_results = results.size();
+    for(int i = 0; i < size_results; ++i) {
+        std::cout << results[i] << " ";
+    }
 	std::cout << "done" << std::endl;
-
-//	//Create nodes
-//	srand (time(NULL));
-//	node** v = new node*[num_nodes];
-//	for(int i = 0; i < num_nodes; ++i) {
-//		v[i] = new node;
-//		v[i]->key = rand() % num_nodes;
-//		std::cout << "keys: " << v[i]->key << std::endl;
-//	}
-//
-//	//Insert nodes
-//	for(int i = 0; i < num_nodes; ++i) {
-//		fib_heap_insert(&H, v[i]);
-//	}
-//
-//	//Extract nodes
-//	node** z = new node*[num_nodes];
-//	for(int i = 0; i < num_calls; ++i) {
-//		z[i] = fib_heap_extract_min(&H);
-//	}
-//
-//	if(H.min->child != NULL) {
-//	    fib_heap_decrease_key(&H, H.min->child, -10);
-//	}
-//
-//	//Print stuff
-//	for(int i = 0; i < num_calls; ++i) {
-//		if(z[i] != NULL) {
-//		    std::cout << "z " << i << " key: " << z[i]->key << " , degree: " << z[i]->degree << std::endl;
-//		}
-//		else {
-//			std::cout << "z key " << i << " is null" << std::endl;
-//		}
-//	}
-//
-//	//Test code
-//	bool is_fibheap = is_fib_heap(H.min);
-//	bool nums_match = numbers_match(H.min);
-//	std::cout << "is fib heap: " << is_fibheap << std::endl;
-//	std::cout << "numbers match: " << nums_match << std::endl;
-//	//End test code
 
 	return 0;
 }
