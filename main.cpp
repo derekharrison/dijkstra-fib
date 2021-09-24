@@ -460,7 +460,7 @@ node* fib_heap_extract_min(FibHeap* H) {
             z->child = NULL;
         }
 
-        //Set all root parents to zero. Remove code when done testing
+        //Set all root parents to zero.
         node* x_track = H->min;
         while(x_track->right != H->min) {
             x_track->p = NULL;
@@ -561,65 +561,7 @@ void relax(node* u, node* v, int** w, FibHeap* H) {
     }
 }
 
-void dijkstra(FibHeap* H) {
-    int n = H->n;
-    int inf = 3e+8;
-
-    //Initialize heap
-    int num_nodes = n;
-    node** v_ref = new node*[num_nodes];
-    for(int i = 0; i < num_nodes; ++i) {
-        v_ref[i] = new node;
-        v_ref[i]->key = inf;
-        v_ref[i]->pi = NULL;
-        v_ref[i]->d = inf;
-        v_ref[i]->index = i;
-        if(i == 0) {
-            v_ref[0]->key = 0;
-            v_ref[0]->d = 0;
-        }
-    }
-
-    int** weight_mat = int2D(n);
-
-    //Populate adjacency and weight matrices
-    for(int i = 0; i < n; ++i) {
-        for(int j = 0; j < n; ++j) {
-            if(i != j) {
-                bool populate_elem = (rand() % n) > n/2;
-                if(populate_elem) {
-                    weight_mat[i][j] = rand() % n + 1;
-                    v_ref[i]->adj_nodes.push_back(j);
-                }
-                else {
-                    weight_mat[i][j] = inf;
-                }
-            }
-            else {
-                weight_mat[i][j] = inf;
-            }
-        }
-    }
-
-    //Insert nodes into heap
-    for(int i = 0; i < num_nodes; ++i) {
-        fib_heap_insert(H, v_ref[i]);
-    }
-
-    //Perform Dijkstra's algorithm
-    while(H->n > 0) {
-        node* u = fib_heap_extract_min(H);
-
-        int num_adj_nodes = u->adj_nodes.size();
-        for(int i = 0; i < num_adj_nodes; ++i) {
-            int index_ref = u->adj_nodes[i];
-            node* v = v_ref[index_ref];
-            relax(u, v, weight_mat, H);
-        }
-    }
-}
-
-void dijkstra2(FibHeap* H, int** w, node** v_ref) {
+void dijkstra(FibHeap* H, int** w, node** v_ref) {
 
     //Perform Dijkstra's algorithm
     while(H->n > 0) {
@@ -713,7 +655,7 @@ std::vector<int> shortest_reach(int n, std::vector<std::vector<int>>& edges, int
     populate_adj_and_weight_hr(index_map, adj_mat, weight_mat, n, edges);
 
     //Perform Dijkstra's algorithm
-    dijkstra2(&H, weight_mat, v_ref);
+    dijkstra(&H, weight_mat, v_ref);
 
     //Reorder results
     std::vector<int> rs_S_reordered;
@@ -751,7 +693,7 @@ int main(int argc, char* argv[]) {
     //Compute distances to nodes from start vertex
     std::vector<int> results = shortest_reach(n, edges, s);
 
-    //Print stuff
+    //Print results
     int size_results = results.size();
     for(int i = 0; i < size_results; ++i) {
         std::cout << results[i] << " ";
