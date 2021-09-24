@@ -679,9 +679,9 @@ int main(int argc, char* argv[]) {
     //Declarations
     int s = 2; //Start vertex must be greater or equal to 1
     int n = 2499; //Number of vertices
+    int num_edges = 3125; //Number of edges
 
     //Create edges
-    int num_edges = 3125;
     std::vector<std::vector<int>> edges;
     for(int i = 0; i < num_edges; ++i) {
         int start_vert = rand() % n + 1;
