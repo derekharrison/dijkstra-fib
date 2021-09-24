@@ -20,12 +20,10 @@ typedef struct Node {
     Node* right;
     Node* p;
     Node* child;
-    Node* pi;
 
     std::vector<int> adj_nodes;
 
     int key;
-    int d;
     int degree;
     int index;
     bool mark;
@@ -555,8 +553,6 @@ void relax(node* u, node* v, int** w, FibHeap* H) {
     if(v->key > u->key + w[u->index][v->index]) {
         int weight = u->key + w[u->index][v->index];
         fib_heap_decrease_key(H, v, weight);
-        v->pi = u;
-        v->d = weight;
         v->key = weight;
     }
 }
@@ -626,12 +622,9 @@ std::vector<int> shortest_reach(int n, std::vector<std::vector<int>>& edges, int
     for(int i = 0; i < num_nodes; ++i) {
         v_ref[i] = new node;
         v_ref[i]->key = inf;
-        v_ref[i]->pi = NULL;
-        v_ref[i]->d = inf;
         v_ref[i]->index = i;
         if(i == 0) {
-            v_ref[0]->key = 0;
-            v_ref[0]->d = 0;
+            v_ref[i]->key = 0;
         }
         fib_heap_insert(&H, v_ref[i]);
     }
