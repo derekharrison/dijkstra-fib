@@ -32,7 +32,8 @@ typedef struct Node {
 class FibHeap {
 public:
     int n;
-    node* min = NULL;
+    node* min;
+    FibHeap() { min = NULL; n = 0; }
 };
 
 bool** bool2D(const int size) {
@@ -585,7 +586,7 @@ void set_index_map(int size_graph, int* index_map, int s) {
     }
 }
 
-void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat, int size_graph, std::vector<std::vector<int>>& edges) {
+void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat, int size_graph, std::vector< std::vector<int> >& edges) {
 
     int** elem_is_set = int2D(size_graph);
 
@@ -605,7 +606,7 @@ void populate_adj_and_weight_hr(int* index_map, int** adj_mat, int** weight_mat,
     }
 }
 
-std::vector<int> shortest_reach(int n, std::vector<std::vector<int>>& edges, int s) {
+std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, int s) {
 
     //Declarations
     FibHeap H;
@@ -675,12 +676,17 @@ int main(int argc, char* argv[]) {
     int num_edges = 3125; //Number of edges
 
     //Create edges
-    std::vector<std::vector<int>> edges;
+    std::vector< std::vector<int> > edges;
     for(int i = 0; i < num_edges; ++i) {
         int start_vert = rand() % n + 1;
         int end_vert = rand() % n + 1;
         int weight = rand() % 200 + 1;
-        edges.push_back({start_vert, end_vert, weight});
+
+        std::vector<int> edge_elem;
+        edge_elem.push_back(start_vert);
+        edge_elem.push_back(end_vert);
+        edge_elem.push_back(weight);
+        edges.push_back(edge_elem);
     }
 
     //Compute distances to nodes from start vertex
@@ -696,8 +702,3 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
-
-
-
-
-
