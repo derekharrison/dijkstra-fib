@@ -10,7 +10,6 @@
 
 #include <vector>
 
-const int SETVAR = 314159;
 const int inf = 3e+8;
 
 typedef struct FibHeapProperties {

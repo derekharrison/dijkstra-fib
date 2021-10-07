@@ -130,8 +130,7 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     s = s - 1;
 
     //Initialize heap reference and weight mat
-    int num_nodes = n;
-    node** node_refs = new node*[num_nodes];
+    node** node_refs = new node*[n];
     int** weight_mat = int2D(n);
 
     //Set weight mat and heap references and create heap
