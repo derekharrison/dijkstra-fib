@@ -162,6 +162,9 @@ void consolidate(FibHeap* H) {
             }
         }
     }
+
+    //Free root list references
+    delete [] A;
 }
 
 void print_child_list(node* child) {
@@ -408,6 +411,7 @@ void populate_weight_and_ref(int size_graph,
                              int** weight_mat,
                              node** node_refs) {
 
+    //Allocate set flags
     int** elem_is_set = int2D(size_graph);
 
     //Create heap
@@ -450,12 +454,15 @@ void populate_weight_and_ref(int size_graph,
             }
         }
     }
+
+    //Deallocate set flags
+    free_int2D(elem_is_set, size_graph);
 }
 
 bool check_fib_heap(FibHeap* H) {
-    //This is the general test for the fibonacci heap.
+    //This is the general test for the Fibonacci heap.
     //The function returns true if the heap satisfies
-    //the fibonacci heap properties
+    //the Fibonacci heap properties
 
     //Compute heap properties
     fib_props fh_props = numbers_match(H->min);
@@ -521,7 +528,7 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     node** node_refs = new node*[num_nodes];
     int** weight_mat = int2D(n);
 
-    //Populate weight mat and heap references
+    //Set weight mat and heap references and create heap
     populate_weight_and_ref(n, edges, s, &H, weight_mat, node_refs);
 
     //Perform Dijkstra's algorithm
@@ -529,6 +536,10 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
 
     //Reorder results
     results = reorder_results(n, s, node_refs);
+
+    //Deallocate memory
+    free_int2D(weight_mat, n);
+    free_node_refs(node_refs, n);
 
     return results;
 }

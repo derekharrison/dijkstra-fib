@@ -5,6 +5,8 @@
  *      Author: d-w-h
  */
 
+#include "user_types.hpp"
+
 bool** bool2D(const int size) {
     bool** p = new bool*[size];
 
@@ -23,4 +25,23 @@ int** int2D(const int size) {
     return p;
 }
 
+void free_bool2D(bool** p, const int size) {
+    for(int i = 0; i < size; ++i)
+        delete [] p[i];
 
+    delete [] p;
+}
+
+void free_int2D(int** p, const int size) {
+    for(int i = 0; i < size; ++i)
+        delete [] p[i];
+
+    delete [] p;
+}
+
+void free_node_refs(node** p, int size) {
+    for(int i = 0; i < size; ++i)
+        delete p[i];
+
+    delete [] p;
+}
