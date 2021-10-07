@@ -13,25 +13,8 @@
 #include <time.h>
 #include <vector>
 
+#include "memory.hpp"
 #include "user_types.hpp"
-
-bool** bool2D(const int size) {
-    bool** p = new bool*[size];
-
-    for(int i = 0; i < size; ++i)
-        p[i] = new bool[size];
-
-    return p;
-}
-
-int** int2D(const int size) {
-    int** p = new int*[size];
-
-    for(int i = 0; i < size; ++i)
-        p[i] = new int[size];
-
-    return p;
-}
 
 void fib_heap_insert(FibHeap* H, node* x) {
     x->degree = 0;
