@@ -436,57 +436,62 @@ void relax(node* u, node* v, int** w, FibHeap* H) {
     }
 }
 
-void set_index_map(int size_graph, int* index_map, int s) {
+int map_index(int n, int index, int s) {
+    int r;
 
-    int index_track = 0;
-    for(int i = s; i < size_graph; ++i) {
-        index_map[i] = index_track;
-        index_track++;
-    }
-    for(int i = 0; i < s; ++i) {
-        index_map[i] = index_track;
-        index_track++;
-    }
+    if(index >= s) { r = index - s; }
+    else { r = n - s + index; }
+
+    return r;
 }
 
-void populate_weight_and_ref(FibHeap* H,
-                             int* index_map,
-                             int** weight_mat,
-                             int size_graph,
+void populate_weight_and_ref(int size_graph,
                              std::vector< std::vector<int> >& edges,
-                             node** v_ref) {
+                             int start_vertex,
+                             FibHeap* H,
+                             int** weight_mat,
+                             node** node_refs) {
 
     int** elem_is_set = int2D(size_graph);
 
+    //Create heap
     for(int i = 0; i < size_graph; ++i) {
-        v_ref[i] = new node;
-        v_ref[i]->key = inf;
-        v_ref[i]->index = i;
+        node_refs[i] = new node;
+        node_refs[i]->key = inf;
+        node_refs[i]->index = i;
         if(i == 0) {
-            v_ref[i]->key = 0;
+            node_refs[i]->key = 0;
         }
-        fib_heap_insert(H, v_ref[i]);
+        fib_heap_insert(H, node_refs[i]);
     }
 
-    //Add references to adjacent nodes
+    //Add references to adjacent nodes and set weight matrix
     int num_edges = (int) edges.size();
     for(int i = 0; i < num_edges; ++i) {
         int start_index = edges[i][0] - 1;
         int end_index = edges[i][1] - 1;
-
-        int start = index_map[start_index];
-        int end = index_map[end_index];
         int weight = edges[i][2];
 
-        v_ref[start]->adj_nodes.push_back(end);
-        v_ref[end]->adj_nodes.push_back(start);
+        int start = map_index(size_graph, start_index, start_vertex);
+        int end = map_index(size_graph, end_index, start_vertex);
 
-        if(elem_is_set[start][end] != SETVAR) {
-            weight_mat[start][end] = weight_mat[end][start] = weight;
-            elem_is_set[start][end] = elem_is_set[end][start] = SETVAR;
+        node_refs[start]->adj_nodes.push_back(end);
+        node_refs[end]->adj_nodes.push_back(start);
+
+        bool is_set = elem_is_set[start][end] == SETVAR;
+
+        if(!is_set) {
+            weight_mat[start][end] = weight;
+            weight_mat[end][start] = weight;
+            elem_is_set[start][end] = SETVAR;
+            elem_is_set[end][start] = SETVAR;
         }
-        else if(elem_is_set[start][end] == SETVAR && weight_mat[start][end] >= weight) {
-            weight_mat[start][end] = weight_mat[end][start] = weight;
+        else {
+            bool is_greater = weight_mat[start][end] >= weight;
+            if(is_greater) {
+                weight_mat[start][end] = weight;
+                weight_mat[end][start] = weight;
+            }
         }
     }
 }
@@ -513,7 +518,7 @@ bool check_fib_heap(FibHeap* H) {
     return heap_is_ok;
 }
 
-void dijkstra(FibHeap* H, int** w, node** v_ref) {
+void dijkstra(FibHeap* H, int** w, node** node_refs) {
 
     //Perform Dijkstra's algorithm
     while(H->n > 0) {
@@ -522,48 +527,54 @@ void dijkstra(FibHeap* H, int** w, node** v_ref) {
         int num_adj_nodes = (int) u->adj_nodes.size();
         for(int i = 0; i < num_adj_nodes; ++i) {
             int index_ref = u->adj_nodes[i];
-            node* v = v_ref[index_ref];
+            node* v = node_refs[index_ref];
             relax(u, v, w, H);
         }
     }
+}
+
+std::vector<int> reorder_results(int n, int s, node** node_refs) {
+    std::vector<int> results;
+
+    for(int i = 0; i < n; ++i) {
+        if(i != s) {
+            int index = map_index(n, i, s);
+            if(node_refs[index]->key == inf) {
+                results.push_back(-1);
+            }
+            else {
+                results.push_back(node_refs[index]->key);
+            }
+        }
+    }
+
+    return results;
 }
 
 std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, int s) {
 
     //Declarations
     FibHeap H;
+    std::vector<int> results;
 
-    //Set index map
-    s = s - 1; //Subtract 1 from start index
-    int* index_map = new int[n];
-    set_index_map(n, index_map, s);
+    //Map start index s to s - 1
+    s = s - 1;
 
     //Initialize heap reference and weight mat
     int num_nodes = n;
-    node** v_ref = new node*[num_nodes];
+    node** node_refs = new node*[num_nodes];
     int** weight_mat = int2D(n);
 
     //Populate weight mat and heap references
-    populate_weight_and_ref(&H, index_map, weight_mat, n, edges, v_ref);
+    populate_weight_and_ref(n, edges, s, &H, weight_mat, node_refs);
 
     //Perform Dijkstra's algorithm
-    dijkstra(&H, weight_mat, v_ref);
+    dijkstra(&H, weight_mat, node_refs);
 
     //Reorder results
-    std::vector<int> rs_S_reordered;
-    for(int i = 0; i < n; ++i) {
-        if(i != s) {
-            int index = index_map[i];
-            if(v_ref[index]->key == inf) {
-                rs_S_reordered.push_back(-1);
-            }
-            else {
-                rs_S_reordered.push_back(v_ref[index]->key);
-            }
-        }
-    }
+    results = reorder_results(n, s, node_refs);
 
-    return rs_S_reordered;
+    return results;
 }
 
 int main(int argc, char* argv[]) {
