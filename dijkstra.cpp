@@ -26,6 +26,17 @@ int map_index(int n, int index, int s) {
     return r;
 }
 
+int map_inverse(int n, int index, int s) {
+    int r;
+
+    r = s + index;
+    if(r > n - 1) {
+        r = r - n;
+    }
+
+    return r;
+}
+
 void relax(node* u, node* v, int** w, FibHeap* H) {
 
     if(v->key > u->key + w[u->index][v->index]) {
@@ -47,6 +58,7 @@ void populate_weight_and_ref(int size_graph,
         node_refs[i] = new node;
         node_refs[i]->key = inf;
         node_refs[i]->index = i;
+        node_refs[i]->index_og = map_inverse(size_graph, i, start_vertex);
         if(i == 0) {
             node_refs[i]->key = 0;
         }
@@ -102,22 +114,16 @@ void dijkstra(FibHeap* H, int** w, node** node_refs) {
     }
 }
 
-std::vector<int> reorder_results(int n, int s, node** node_refs) {
-    std::vector<int> results;
+void reorder_results(int n, int s, node** node_refs, std::vector<int>& results) {
 
     for(int i = 0; i < n; ++i) {
-        if(i != s) {
-            int index = map_index(n, i, s);
-            if(node_refs[index]->key == inf) {
-                results.push_back(-1);
-            }
-            else {
-                results.push_back(node_refs[index]->key);
-            }
+        int index = map_index(n, i, s);
+        if(node_refs[index]->index_og != s) {
+            int key = node_refs[index]->key;
+            if(key == inf) { key = -1; }
+            results.push_back(key);
         }
     }
-
-    return results;
 }
 
 std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, int s) {
@@ -140,7 +146,7 @@ std::vector<int> shortest_reach(int n, std::vector< std::vector<int> >& edges, i
     dijkstra(&H, weight_mat, node_refs);
 
     //Reorder results
-    results = reorder_results(n, s, node_refs);
+    reorder_results(n, s, node_refs, results);
 
     //Deallocate memory
     free_int2D(weight_mat, n);

@@ -28,6 +28,7 @@ typedef struct Node {
     int key;
     int degree;
     int index;
+    int index_og;
     bool mark;
 } node;
 
