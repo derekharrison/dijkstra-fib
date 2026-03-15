@@ -8,11 +8,11 @@
 #ifndef SUPPORT_HPP_
 #define SUPPORT_HPP_
 
-#include "user_types.hpp"
+#include "usertypes.hpp"
 
-void print_root_list(node* z);
-void print_child_list(node* child);
-void print_list(node* z);
-bool check_fib_heap(FibHeap* H);
+void printRootList(Node * z);
+void printChildList(Node * child);
+void printList(Node * z);
+bool checkFibHeap(FibHeap * H);
 
 #endif /* SUPPORT_HPP_ */

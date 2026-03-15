@@ -5,43 +5,18 @@
  *      Author: d-w-h
  */
 
-#include "user_types.hpp"
+#include "usertypes.hpp"
 
-bool** bool2D(const int size) {
-    bool** p = new bool*[size];
-
-    for(int i = 0; i < size; ++i)
-        p[i] = new bool[size];
-
-    return p;
+Node ** getNodeRef(int n) {
+    
+    return (Node **) malloc(sizeof(Node *) * n);
 }
 
-int** int2D(const int size) {
-    int** p = new int*[size];
+void freeNodeRef(Node ** vRef, int size) {
+    for(int i = 0; i < size; ++i) {
+        free(vRef[i]);
+    }
 
-    for(int i = 0; i < size; ++i)
-        p[i] = new int[size];
-
-    return p;
+    free(vRef);
 }
 
-void free_bool2D(bool** p, const int size) {
-    for(int i = 0; i < size; ++i)
-        delete [] p[i];
-
-    delete [] p;
-}
-
-void free_int2D(int** p, const int size) {
-    for(int i = 0; i < size; ++i)
-        delete [] p[i];
-
-    delete [] p;
-}
-
-void free_node_refs(node** p, int size) {
-    for(int i = 0; i < size; ++i)
-        delete p[i];
-
-    delete [] p;
-}
