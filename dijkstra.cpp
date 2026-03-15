@@ -33,13 +33,13 @@ void createFibonacciHeap(int sizeGraph, Node ** NodeRefs, FibHeap * H) {
         fibHeapInsert(H, NodeRefs[i]);
 }
 
-void createNodeReferences(int sizeGraph, std::vector<std::vector<int>> & edges, int startVertex, Node ** NodeRefs) {
+void createNodeReferences(int sizeGraph, std::vector<std::vector<int>> & edges, int startVertex, Node ** nodeRefs) {
     for(int i = 0; i < sizeGraph; ++i) {
-        NodeRefs[i] = ((Node *) calloc(1, sizeof(Node)));
-        NodeRefs[i]->key = inf;
-        NodeRefs[i]->index = i;
+        nodeRefs[i] = ((Node *) calloc(1, sizeof(Node)));
+        nodeRefs[i]->key = inf;
+        nodeRefs[i]->index = i;
         if(i == 0)
-            NodeRefs[i]->key = 0;
+            nodeRefs[i]->key = 0;
     }
     
     for(std::vector<int> edge : edges) {
@@ -50,32 +50,32 @@ void createNodeReferences(int sizeGraph, std::vector<std::vector<int>> & edges, 
         int start = mapIndex(sizeGraph, startIndex, startVertex);
         int end = mapIndex(sizeGraph, endIndex, startVertex);
 
-        NodeRefs[start]->adjNodes.push_back(end);
-        NodeRefs[start]->adjWeights.push_back(weight);
+        nodeRefs[start]->adjNodes.push_back(end);
+        nodeRefs[start]->adjWeights.push_back(weight);
     }
 }
 
-void dijkstra(FibHeap * H, Node ** NodeRefs) {
+void dijkstra(FibHeap * H, Node ** nodeRefs) {
     while(H->n > 0) {
         Node * u = fibHeapExtractMin(H);
         for(int i = 0; i < u->adjNodes.size(); i++) {
-            Node * v = NodeRefs[u->adjNodes[i]];
+            Node * v = nodeRefs[u->adjNodes[i]];
             int weight = u->adjWeights[i];
             relax(u, v, weight, H);
         }
     }
 }
 
-std::vector<int> reorderResults(FibHeap * H, int n, int s, Node ** NodeRefs) {
+std::vector<int> reorderResults(FibHeap * H, int n, int s, Node ** nodeRefs) {
     std::vector<int> results;
     for(int i = 0; i < n; ++i) {
         if(i != s) {
             int index = mapIndex(n, i, s);
-            if(NodeRefs[index]->key == inf) {
+            if(nodeRefs[index]->key == inf) {
                 results.push_back(-1);
             }
             else {
-                results.push_back(NodeRefs[index]->key);
+                results.push_back(nodeRefs[index]->key);
             }
         }
     }
@@ -98,17 +98,17 @@ std::vector<int> dijkstra(int n, std::vector<std::vector<int>> & edges, int s) {
 
     s = s - 1;
 
-    Node ** NodeRefs = getNodeRef(n);
+    Node ** nodeRefs = getNodeRef(n);
     
-    createNodeReferences(n, edges, s, NodeRefs);
+    createNodeReferences(n, edges, s, nodeRefs);
     
-    createFibonacciHeap(n, NodeRefs, &H);
+    createFibonacciHeap(n, nodeRefs, &H);
 
-    dijkstra(&H, NodeRefs);
+    dijkstra(&H, nodeRefs);
 
-    results = reorderResults(&H, n, s, NodeRefs);
+    results = reorderResults(&H, n, s, nodeRefs);
 
-    freeNodeRef(NodeRefs, n);
+    freeNodeRef(nodeRefs, n);
 
     return results;
 } 

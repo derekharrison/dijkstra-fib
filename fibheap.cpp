@@ -56,7 +56,6 @@ void makeChildOf(FibHeap * H, Node * y, Node * x) {
 
     //Set mark
     y->mark = false;
-
     x->degree = x->degree + 1;
 }
 
@@ -86,9 +85,12 @@ void linkDupDegree(FibHeap * H, Node ** A, Node *& x) {
                 H->min = y;
                 x = H->min;
             }
+            A[d] = NULL;
+            d = d + 1;
         }
-        A[d] = NULL;
-        d = d + 1;
+        else {
+            A[d] = NULL;
+        }
     }
     A[d] = x;
 
@@ -139,7 +141,7 @@ void consolidate(FibHeap * H) {
     }
 
     //Free root list reference
-    free(A);
+    delete [] A;
 }
 
 void nullifyChildrenParentNode(Node * z) {
