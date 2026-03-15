@@ -6,11 +6,6 @@
  */
 
 #include <iostream>
-#include <stdio.h>
-#include <math.h>
-#include <cstdlib>
-#include <stdlib.h>
-#include <time.h>
 #include <vector>
 
 #include "dijkstra.hpp"

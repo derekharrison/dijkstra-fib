@@ -5,12 +5,6 @@
  *      Author: d-w-h
  */
 
-#include <iostream>
-#include <stdio.h>
-#include <math.h>
-#include <cstdlib>
-#include <stdlib.h>
-#include <time.h>
 #include <vector>
 
 #include "fibheap.hpp"
@@ -19,7 +13,6 @@
 #include "usertypes.hpp"
 
 void relax(Node * u, Node * v, int w, FibHeap * H) {
-
     if(v->key > u->key + w) {
         int weight = u->key + w;
         fibHeapDecreaseKey(H, v, weight);
@@ -29,36 +22,30 @@ void relax(Node * u, Node * v, int w, FibHeap * H) {
 int mapIndex(int n, int index, int s) {
     int r;
 
-    if(index >= s) { r = index - s; }
-    else { r = n - s + index; }
+    if(index >= s)  r = index - s;
+    else r = n - s + index;
 
     return r;
 }
 
-void setWeightMatAndRef(int sizeGraph,
-                        std::vector<std::vector<int>> & edges,
-                        int startVertex,
-                        FibHeap * H,
-                        Node ** NodeRefs) {
+void createFibonacciHeap(int sizeGraph, Node ** NodeRefs, FibHeap * H) {
+    for(int i = 0; i < sizeGraph; ++i)
+        fibHeapInsert(H, NodeRefs[i]);
+}
 
-
-    //Initialize and construct heap
+void createNodeReferences(int sizeGraph, std::vector<std::vector<int>> & edges, int startVertex, Node ** NodeRefs) {
     for(int i = 0; i < sizeGraph; ++i) {
         NodeRefs[i] = ((Node *) calloc(1, sizeof(Node)));
         NodeRefs[i]->key = inf;
         NodeRefs[i]->index = i;
-        if(i == 0) {
+        if(i == 0)
             NodeRefs[i]->key = 0;
-        }
-        fibHeapInsert(H, NodeRefs[i]);
     }
-
-    //Set weight  matrix and adjacent Nodes
-    int numEdges = (int) edges.size();
-    for(int i = 0; i < numEdges; ++i) {
-        int startIndex = edges[i][0] - 1;
-        int endIndex = edges[i][1] - 1;
-        int weight = edges[i][2];
+    
+    for(std::vector<int> edge : edges) {
+        int startIndex = edge[0] - 1;
+        int endIndex = edge[1] - 1;
+        int weight = edge[2];
 
         int start = mapIndex(sizeGraph, startIndex, startVertex);
         int end = mapIndex(sizeGraph, endIndex, startVertex);
@@ -69,11 +56,8 @@ void setWeightMatAndRef(int sizeGraph,
 }
 
 void dijkstra(FibHeap * H, Node ** NodeRefs) {
-
-    //Perform Dijkstra's algorithm
     while(H->n > 0) {
         Node * u = fibHeapExtractMin(H);
-
         for(int i = 0; i < u->adjNodes.size(); i++) {
             Node * v = NodeRefs[u->adjNodes[i]];
             int weight = u->adjWeights[i];
@@ -83,7 +67,6 @@ void dijkstra(FibHeap * H, Node ** NodeRefs) {
 }
 
 std::vector<int> reorderResults(FibHeap * H, int n, int s, Node ** NodeRefs) {
-
     std::vector<int> results;
     for(int i = 0; i < n; ++i) {
         if(i != s) {
@@ -110,27 +93,21 @@ int max(int a, int b) {
 }
 
 std::vector<int> dijkstra(int n, std::vector<std::vector<int>> & edges, int s) {
-
-    //Heap and Results
     FibHeap H;
     std::vector<int> results;
 
-    //Map start vertex index
     s = s - 1;
 
-    //Node references
     Node ** NodeRefs = getNodeRef(n);
+    
+    createNodeReferences(n, edges, s, NodeRefs);
+    
+    createFibonacciHeap(n, NodeRefs, &H);
 
-    //Set weight matrix and create heap
-    setWeightMatAndRef(n, edges, s, &H, NodeRefs);
-
-    //Perform Dijkstra's algorithm
     dijkstra(&H, NodeRefs);
 
-    //Reorder results
     results = reorderResults(&H, n, s, NodeRefs);
 
-    //Deallocate memory
     freeNodeRef(NodeRefs, n);
 
     return results;

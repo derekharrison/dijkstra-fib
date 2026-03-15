@@ -6,11 +6,6 @@
  */
 
 #include <iostream>
-#include <stdio.h>
-#include <math.h>
-#include <cstdlib>
-#include <stdlib.h>
-#include <time.h>
 #include <vector>
 
 #include "memory.hpp"
@@ -80,7 +75,6 @@ bool numbersChildrenMatch(Node* z, int& numNodes1) {
 }
 
 FibHeapProperties numbersMatch(Node* z) {
-
     bool numsMatch = true;
     int numNodes = 0;
     FibHeapProperties props = { numsMatch, numNodes };
