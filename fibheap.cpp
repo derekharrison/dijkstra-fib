@@ -36,7 +36,6 @@ void fibHeapInsert(FibHeap * H, Node * x) {
 }
 
 void makeChildOf(FibHeap * H, Node * y, Node * x) {
-
     //Remove Node from root list
     y->left->right = y->right;
     y->right->left = y->left;
@@ -96,7 +95,6 @@ void linkDupDegree(FibHeap * H, Node ** A, Node *& x) {
 }
 
 void consolidate(FibHeap * H) {
-
     //Compute upper bound root list
     double golden = (1.0 + sqrt(5.0)) / 2.0;
     double f = log(H->n) / log(golden);
@@ -155,7 +153,6 @@ void nullifyChildrenParentNode(Node * z) {
 }
 
 Node * fibHeapExtractMin(FibHeap * H) {
-
     Node * z = H->min;
 
     if(z != NULL) {
@@ -195,7 +192,6 @@ Node * fibHeapExtractMin(FibHeap * H) {
 }
 
 void cut(FibHeap * H, Node * x, Node * y) {
-
     //If x is only child set child of parent to null
     if(x == x->right) {
         y->child = NULL;
