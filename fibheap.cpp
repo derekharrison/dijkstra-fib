@@ -86,9 +86,9 @@ void linkDupDegree(FibHeap * H, Node ** A, Node *& x) {
                 H->min = y;
                 x = H->min;
             }
-            A[d] = NULL;
-            d = d + 1;
         }
+        A[d] = NULL;
+        d = d + 1;
     }
     A[d] = x;
 
